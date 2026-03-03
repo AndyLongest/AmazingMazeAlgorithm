@@ -1,0 +1,17 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+
+# Generated outputs
+algorithm_gif/
+outputs/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
