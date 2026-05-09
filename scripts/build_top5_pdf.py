@@ -12,6 +12,9 @@ MD_PATH = Path('docs/top5-teaching-bad-repos.md')
 PDF_PATH = Path('docs/top5-teaching-bad-repos.pdf')
 # Approximate wrap width for A4 with 20mm margins and 12pt STSong-Light text.
 MAX_CHARS_PER_LINE = 46
+# Larger heading fonts need fewer characters per visual line to avoid overflow.
+H1_WRAP_ADJUST = 4
+H2_WRAP_ADJUST = 2
 
 
 def build_pdf() -> None:
@@ -31,19 +34,22 @@ def build_pdf() -> None:
     for raw_line in text:
         line = raw_line.strip()
         if line.startswith('# '):
-            c.setFont('STSong-Light', 16)
-            wrapped = textwrap.wrap(line[2:].strip(), width=MAX_CHARS_PER_LINE - 4) or ['']
+            font_size = 16
+            c.setFont('STSong-Light', font_size)
+            wrapped = textwrap.wrap(line[2:].strip(), width=MAX_CHARS_PER_LINE - H1_WRAP_ADJUST) or ['']
         elif line.startswith('## '):
-            c.setFont('STSong-Light', 14)
-            wrapped = textwrap.wrap(line[3:].strip(), width=MAX_CHARS_PER_LINE - 2) or ['']
+            font_size = 14
+            c.setFont('STSong-Light', font_size)
+            wrapped = textwrap.wrap(line[3:].strip(), width=MAX_CHARS_PER_LINE - H2_WRAP_ADJUST) or ['']
         else:
-            c.setFont('STSong-Light', 12)
+            font_size = 12
+            c.setFont('STSong-Light', font_size)
             wrapped = textwrap.wrap(line, width=MAX_CHARS_PER_LINE) or ['']
 
         for part in wrapped:
             if y < bottom:
                 c.showPage()
-                c.setFont('STSong-Light', 12)
+                c.setFont('STSong-Light', font_size)
                 y = top
             c.drawString(left, y, part)
             y -= line_h
