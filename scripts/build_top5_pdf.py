@@ -10,6 +10,8 @@ from reportlab.pdfgen import canvas
 
 MD_PATH = Path('docs/top5-teaching-bad-repos.md')
 PDF_PATH = Path('docs/top5-teaching-bad-repos.pdf')
+# Approximate wrap width for A4 with 20mm margins and 12pt STSong-Light text.
+MAX_CHARS_PER_LINE = 46
 
 
 def build_pdf() -> None:
@@ -18,13 +20,11 @@ def build_pdf() -> None:
     pdfmetrics.registerFont(UnicodeCIDFont('STSong-Light'))
 
     c = canvas.Canvas(str(PDF_PATH), pagesize=A4)
-    width, height = A4
+    _, height = A4
     left = 20 * mm
     top = height - 20 * mm
     bottom = 20 * mm
     line_h = 7 * mm
-    max_chars = 46
-
     y = top
     c.setFont('STSong-Light', 12)
 
@@ -32,13 +32,13 @@ def build_pdf() -> None:
         line = raw_line.strip()
         if line.startswith('# '):
             c.setFont('STSong-Light', 16)
-            wrapped = textwrap.wrap(line[2:].strip(), width=max_chars - 4) or ['']
+            wrapped = textwrap.wrap(line[2:].strip(), width=MAX_CHARS_PER_LINE - 4) or ['']
         elif line.startswith('## '):
             c.setFont('STSong-Light', 14)
-            wrapped = textwrap.wrap(line[3:].strip(), width=max_chars - 2) or ['']
+            wrapped = textwrap.wrap(line[3:].strip(), width=MAX_CHARS_PER_LINE - 2) or ['']
         else:
             c.setFont('STSong-Light', 12)
-            wrapped = textwrap.wrap(line, width=max_chars) or ['']
+            wrapped = textwrap.wrap(line, width=MAX_CHARS_PER_LINE) or ['']
 
         for part in wrapped:
             if y < bottom:
