@@ -73,7 +73,7 @@ def build_pdf() -> None:
             c.drawString(left, y, part)
             y -= line_h
 
-        y -= 1 * mm
+        y -= mm
 
     c.save()
 
