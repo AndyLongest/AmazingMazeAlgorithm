@@ -11,7 +11,7 @@ from reportlab.pdfgen import canvas
 MD_PATH = Path('docs/top5-teaching-bad-repos.md')
 PDF_PATH = Path('docs/top5-teaching-bad-repos.pdf')
 # Approximate wrap width for A4 with 20mm margins and 12pt STSong-Light text.
-MAX_CHARS_PER_LINE = 46
+DEFAULT_WRAP_WIDTH = 46
 # Larger heading fonts need fewer characters per visual line to avoid overflow.
 H1_WRAP_ADJUST = 4
 H2_WRAP_ADJUST = 2
@@ -36,15 +36,15 @@ def build_pdf() -> None:
         if line.startswith('# '):
             font_size = 16
             c.setFont('STSong-Light', font_size)
-            wrapped = textwrap.wrap(line[2:].strip(), width=MAX_CHARS_PER_LINE - H1_WRAP_ADJUST) or ['']
+            wrapped = textwrap.wrap(line[2:].strip(), width=DEFAULT_WRAP_WIDTH - H1_WRAP_ADJUST) or ['']
         elif line.startswith('## '):
             font_size = 14
             c.setFont('STSong-Light', font_size)
-            wrapped = textwrap.wrap(line[3:].strip(), width=MAX_CHARS_PER_LINE - H2_WRAP_ADJUST) or ['']
+            wrapped = textwrap.wrap(line[3:].strip(), width=DEFAULT_WRAP_WIDTH - H2_WRAP_ADJUST) or ['']
         else:
             font_size = 12
             c.setFont('STSong-Light', font_size)
-            wrapped = textwrap.wrap(line, width=MAX_CHARS_PER_LINE) or ['']
+            wrapped = textwrap.wrap(line, width=DEFAULT_WRAP_WIDTH) or ['']
 
         for part in wrapped:
             if y < bottom:
