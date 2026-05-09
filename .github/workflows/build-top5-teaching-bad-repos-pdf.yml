@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'docs/top5-teaching-bad-repos.md'
+      - 'scripts/build_top5_pdf.py'
       - '.github/workflows/build-top5-teaching-bad-repos-pdf.yml'
   workflow_dispatch:
 
