@@ -1,0 +1,37 @@
+name: Build Top5 Teaching Bad Repos PDF
+
+on:
+  push:
+    paths:
+      - 'docs/top5-teaching-bad-repos.md'
+      - 'scripts/build_top5_pdf.py'
+      - '.github/workflows/build-top5-teaching-bad-repos-pdf.yml'
+  workflow_dispatch:
+
+jobs:
+  build-pdf:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install PDF dependency
+        run: python -m pip install --upgrade pip reportlab
+
+      - name: Build PDF from markdown
+        run: python scripts/build_top5_pdf.py
+
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: top5-teaching-bad-repos-pdf
+          path: docs/top5-teaching-bad-repos.pdf
+          if-no-files-found: error
