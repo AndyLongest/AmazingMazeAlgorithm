@@ -1,0 +1,86 @@
+name: Build Top5 Teaching Bad Repos PDF
+
+on:
+  push:
+    paths:
+      - 'docs/top5-teaching-bad-repos.md'
+      - '.github/workflows/build-top5-teaching-bad-repos-pdf.yml'
+  workflow_dispatch:
+
+jobs:
+  build-pdf:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install PDF dependency
+        run: python -m pip install --upgrade pip reportlab
+
+      - name: Build PDF from markdown
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from reportlab.lib.pagesizes import A4
+          from reportlab.lib.units import mm
+          from reportlab.pdfbase import pdfmetrics
+          from reportlab.pdfbase.cidfonts import UnicodeCIDFont
+          from reportlab.pdfgen import canvas
+          import textwrap
+
+          md_path = Path('docs/top5-teaching-bad-repos.md')
+          pdf_path = Path('docs/top5-teaching-bad-repos.pdf')
+
+          text = md_path.read_text(encoding='utf-8').splitlines()
+
+          pdfmetrics.registerFont(UnicodeCIDFont('STSong-Light'))
+
+          c = canvas.Canvas(str(pdf_path), pagesize=A4)
+          width, height = A4
+          left = 20 * mm
+          top = height - 20 * mm
+          bottom = 20 * mm
+          line_h = 7 * mm
+          max_chars = 46
+
+          y = top
+          c.setFont('STSong-Light', 12)
+
+          for raw_line in text:
+              line = raw_line.strip()
+              if line.startswith('# '):
+                  c.setFont('STSong-Light', 16)
+                  wrapped = textwrap.wrap(line[2:].strip(), width=max_chars - 4) or ['']
+              elif line.startswith('## '):
+                  c.setFont('STSong-Light', 14)
+                  wrapped = textwrap.wrap(line[3:].strip(), width=max_chars - 2) or ['']
+              else:
+                  c.setFont('STSong-Light', 12)
+                  wrapped = textwrap.wrap(line, width=max_chars) or ['']
+
+              for part in wrapped:
+                  if y < bottom:
+                      c.showPage()
+                      c.setFont('STSong-Light', 12)
+                      y = top
+                  c.drawString(left, y, part)
+                  y -= line_h
+
+              y -= 1 * mm
+
+          c.save()
+          print(f'Generated: {pdf_path}')
+          PY
+
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: top5-teaching-bad-repos-pdf
+          path: docs/top5-teaching-bad-repos.pdf
+          if-no-files-found: error
